@@ -4,28 +4,28 @@ pipeline {
     parameters {
         choice(
             name: 'PRODUCT_COUNT',
-            choices: ['1', '2', '3'],
-            description: '选择要购买的商品数量'
+            choices: ['1', '2', '3','4','5','6','7','8','9'],
+            description: '购买商品数量'
         )
         string(
             name: 'FIRST_NAME',
             defaultValue: 'John',
-            description: '输入收件人名字'
+            description: '收件人名字'
         )
         string(
             name: 'LAST_NAME',
             defaultValue: 'Doe',
-            description: '输入收件人姓氏'
+            description: '收件人姓名'
         )
         string(
             name: 'POSTAL_CODE',
             defaultValue: '12345',
-            description: '输入邮政编码'
+            description: '邮政编码'
         )
         choice(
             name: 'BROWSER',
             choices: ['chrome', 'firefox'],
-            description: '选择测试浏览器'
+            description: '测试浏览器类别'
         )
     }
     
