@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testng-results skipped="0" failed="0" ignored="0" total="3" passed="3">
+  <reporter-output>
+  </reporter-output>
+  <suite name="Parameterized SauceDemo Test Suite" duration-ms="4985" started-at="2025-04-18T16:42:14 CST" finished-at="2025-04-18T16:42:19 CST">
+    <groups>
+    </groups>
+    <test name="Parameterized Purchase Test" duration-ms="4985" started-at="2025-04-18T16:42:14 CST" finished-at="2025-04-18T16:42:19 CST">
+      <class name="tests.ParameterizedPurchaseTest">
+        <test-method status="PASS" signature="setup(java.lang.String,java.lang.String,java.lang.String,java.lang.String,java.lang.String)[pri:0, instance:tests.ParameterizedPurchaseTest@52f759d7]" name="setup" is-config="true" duration-ms="2504" started-at="2025-04-18T16:42:14 CST" finished-at="2025-04-18T16:42:16 CST">
+          <params>
+            <param index="0">
+              <value>
+                <![CDATA[chrome]]>
+              </value>
+            </param>
+            <param index="1">
+              <value>
+                <![CDATA[2]]>
+              </value>
+            </param>
+            <param index="2">
+              <value>
+                <![CDATA[John]]>
+              </value>
+            </param>
+            <param index="3">
+              <value>
+                <![CDATA[Doe]]>
+              </value>
+            </param>
+            <param index="4">
+              <value>
+                <![CDATA[12345]]>
+              </value>
+            </param>
+          </params>
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- setup -->
+        <test-method status="PASS" signature="testLogin()[pri:1, instance:tests.ParameterizedPurchaseTest@52f759d7]" name="testLogin" duration-ms="882" started-at="2025-04-18T16:42:16 CST" finished-at="2025-04-18T16:42:17 CST">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- testLogin -->
+        <test-method status="PASS" signature="testAddProductsToCart()[pri:2, instance:tests.ParameterizedPurchaseTest@52f759d7]" name="testAddProductsToCart" duration-ms="255" started-at="2025-04-18T16:42:17 CST" finished-at="2025-04-18T16:42:18 CST">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- testAddProductsToCart -->
+        <test-method status="PASS" signature="testCheckoutProcess()[pri:3, instance:tests.ParameterizedPurchaseTest@52f759d7]" name="testCheckoutProcess" duration-ms="589" started-at="2025-04-18T16:42:18 CST" finished-at="2025-04-18T16:42:18 CST">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- testCheckoutProcess -->
+        <test-method status="PASS" signature="tearDown()[pri:0, instance:tests.ParameterizedPurchaseTest@52f759d7]" name="tearDown" is-config="true" duration-ms="728" started-at="2025-04-18T16:42:18 CST" finished-at="2025-04-18T16:42:19 CST">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- tearDown -->
+      </class> <!-- tests.ParameterizedPurchaseTest -->
+    </test> <!-- Parameterized Purchase Test -->
+  </suite> <!-- Parameterized SauceDemo Test Suite -->
+</testng-results>

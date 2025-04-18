@@ -1,0 +1,8 @@
+pages\BasePage.class
+pages\ProductsPage.class
+tests\ParameterizedPurchaseTest.class
+pages\LoginPage.class
+pages\CartPage.class
+pages\CheckoutPage.class
+utils\ScreenshotUtils.class
+utils\TestUtils.class

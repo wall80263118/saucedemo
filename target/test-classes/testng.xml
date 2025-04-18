@@ -1,0 +1,13 @@
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="Parameterized SauceDemo Test Suite">
+    <parameter name="browser" value="chrome"/>
+    <parameter name="productCount" value="2"/>
+    <parameter name="firstName" value="John"/>
+    <parameter name="lastName" value="Doe"/>
+    <parameter name="postalCode" value="12345"/>
+    <test name="Parameterized Purchase Test">
+        <classes>
+            <class name="tests.ParameterizedPurchaseTest"/>
+        </classes>
+    </test>
+</suite>

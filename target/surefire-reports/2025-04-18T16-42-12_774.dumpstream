@@ -1,0 +1,5 @@
+# Created at 2025-04-18T16:42:13.400
+Boot Manifest-JAR contains absolute paths in classpath 'D:\code\python\学习\saucedemo\target\test-classes'
+Hint: <argLine>-Djdk.net.URLClassPath.disableClassPathURLCheck=true</argLine>
+'other' has different root
+
