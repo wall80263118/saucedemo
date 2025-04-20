@@ -1,31 +1,33 @@
 pipeline {
     agent any
-    
+        environment {
+            KNOWN_HOSTS_PATH = 'C:\\Windows\\System32\\config\\systemprofile\\.ssh\\known_hosts'
+        }
     parameters {
         choice(
             name: 'PRODUCT_COUNT',
             choices: ['1', '2', '3','4','5','6','7','8','9'],
-            description: '购买商品数量'
+            description: 'The quantity of products to purchase'
         )
         string(
             name: 'FIRST_NAME',
             defaultValue: 'John',
-            description: '收件人名字'
+            description: 'The first name'
         )
         string(
             name: 'LAST_NAME',
             defaultValue: 'Doe',
-            description: '收件人姓名'
+            description: 'The last name'
         )
         string(
             name: 'POSTAL_CODE',
             defaultValue: '12345',
-            description: '邮政编码'
+            description: 'Postal code'
         )
         choice(
             name: 'BROWSER',
             choices: ['chrome', 'firefox'],
-            description: '测试浏览器类别'
+            description: 'Browser'
         )
     }
     
@@ -35,10 +37,24 @@ pipeline {
     }
     
     stages {
+        stage('Test SSH') {
+            steps {
+                bat 'ssh -T -v -o UserKnownHostsFile=C:\\Windows\\System32\\config\\systemprofile\\.ssh\\known_hosts git@github.com'
+            }
+        }
         stage('Checkout') {
             steps {
-                git branch: 'main', 
-                url: 'https://github.com/your-repo/saucedemo-test.git'
+                checkout([
+                    $class: 'GitSCM',
+                    userRemoteConfigs: [[
+                        url: 'git@github.com:wall80263118/saucedemo.git',
+                        credentialsId: 'github-system-key',
+                        sshOptions: [
+                            "-o UserKnownHostsFile=${env.KNOWN_HOSTS_PATH}",
+                            '-o HostKeyAlgorithms=ssh-ed25519'
+                        ]
+                    ]]
+                ])
             }
         }
         
