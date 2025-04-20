@@ -44,7 +44,7 @@ pipeline {
     stages {
         stage('Test SSH') {
             steps {
-                bat 'ssh -T -v -o UserKnownHostsFile=C:\\Windows\\System32\\config\\systemprofile\\.ssh\\known_hosts git@github.com:wall80263118/saucedemo.git'
+                bat 'ssh -T -v -o UserKnownHostsFile=C:\\Windows\\System32\\config\\systemprofile\\.ssh\\known_hosts git@github.com'
             }
         }
         
