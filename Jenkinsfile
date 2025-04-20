@@ -1,8 +1,13 @@
 pipeline {
     agent any
-        environment {
-            KNOWN_HOSTS_PATH = 'C:\\Windows\\System32\\config\\systemprofile\\.ssh\\known_hosts'
-        }
+    environment {
+        GIT_SSH_COMMAND = 'ssh -i C:\\Windows\\System32\\config\\systemprofile\\.ssh\\github_key -o UserKnownHostsFile=C:\\Windows\\System32\\config\\systemprofile\\.ssh\\known_hosts'
+        // Git 全局配置（必须）
+        GIT_AUTHOR_NAME = 'wall80263118'
+        GIT_COMMITTER_NAME = 'wall80263118'
+        GIT_AUTHOR_EMAIL = '249601700@qq.com'
+        GIT_COMMITTER_EMAIL = '249601700@qq.com'
+    }
     parameters {
         choice(
             name: 'PRODUCT_COUNT',
@@ -39,33 +44,18 @@ pipeline {
     stages {
         stage('Test SSH') {
             steps {
-                bat 'ssh -T -v -o UserKnownHostsFile=C:\\Windows\\System32\\config\\systemprofile\\.ssh\\known_hosts git@github.com'
-            }
-        }
-        stage('Checkout') {
-            steps {
-                checkout([
-                    $class: 'GitSCM',
-                    userRemoteConfigs: [[
-                        url: 'git@github.com:wall80263118/saucedemo.git',
-                        credentialsId: 'github-system-key',
-                        sshOptions: [
-                            "-o UserKnownHostsFile=${env.KNOWN_HOSTS_PATH}",
-                            '-o HostKeyAlgorithms=ssh-ed25519'
-                        ]
-                    ]]
-                ])
+                bat 'ssh -T -v -o UserKnownHostsFile=C:\\Windows\\System32\\config\\systemprofile\\.ssh\\known_hosts git@github.com:wall80263118/saucedemo.git'
             }
         }
         
         stage('Test') {
             steps {
-                sh """
-                mvn clean test -Dbrowser=${params.BROWSER} \
-                -DproductCount=${params.PRODUCT_COUNT} \
-                -DfirstName=${params.FIRST_NAME} \
-                -DlastName=${params.LAST_NAME} \
-                -DpostalCode=${params.POSTAL_CODE}
+                bat """
+                    mvn clean test -Dbrowser=${params.BROWSER} ^
+                    -DproductCount=${params.PRODUCT_COUNT} ^
+                    -DfirstName=${params.FIRST_NAME} ^
+                    -DlastName=${params.LAST_NAME} ^
+                    -DpostalCode=${params.POSTAL_CODE}
                 """
             }
             post {
@@ -75,7 +65,19 @@ pipeline {
                 }
             }
         }
-        
+        stage('Checkout') {
+            steps {
+                checkout([
+                    $class: 'GitSCM',
+                    branches: [[name: '*/main']],
+                    extensions: [],
+                    userRemoteConfigs: [[
+                        url: 'git@github.com:wall80263118/saucedemo.git',
+                        credentialsId: 'github-system-key'
+                    ]]
+                ])
+            }
+        }
         stage('Report') {
             steps {
                 publishHTML target: [
