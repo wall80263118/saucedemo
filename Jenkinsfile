@@ -5,7 +5,7 @@ pipeline {
         KNOWN_HOSTS = 'C:\\Windows\\System32\\config\\systemprofile\\.ssh\\known_hosts'
         GIT_SSH_COMMAND = "ssh -i ${SSH_KEY} -o UserKnownHostsFile=${KNOWN_HOSTS} -o IdentitiesOnly=yes"
     }
-    
+
     parameters {
         choice(name: 'PRODUCT_COUNT', choices: ['1', '2', '3','4','5','6','7','8','9'], description: '购买商品数量')
         string(name: 'FIRST_NAME', defaultValue: 'John', description: '收件人名字')
@@ -13,17 +13,20 @@ pipeline {
         string(name: 'POSTAL_CODE', defaultValue: '12345', description: '邮政编码')
         choice(name: 'BROWSER', choices: ['chrome', 'firefox'], description: '测试浏览器')
     }
-    
+
     tools {
         maven 'maven-3.9.9'
         jdk 'jdk17'
     }
-    
+
     stages {
         stage('Verify SSH') {
             steps {
                 script {
                     echo "开始执行 SSH 验证..."
+                    echo "GIT_SSH_COMMAND: ${env.GIT_SSH_COMMAND}"
+                    echo "SSH_KEY: ${env.SSH_KEY}"
+                    echo "KNOWN_HOSTS: ${env.KNOWN_HOSTS}"
                     try {
                         def sshOutput = bat(
                             script: '%GIT_SSH_COMMAND% -T git@github.com 2>&1',
@@ -35,7 +38,7 @@ pipeline {
                             error "SSH验证失败，输出: ${sshOutput}"
                         } else {
                             echo "SSH 验证成功"
-                            currentBuild.result = null // 明确设置为 null，确保后续阶段正常执行
+                            currentBuild.result = null
                         }
                     } catch (Exception e) {
                         currentBuild.result = 'FAILURE'
@@ -44,7 +47,7 @@ pipeline {
                 }
             }
         }
-        
+
         stage('Checkout Code') {
             when {
                 expression { currentBuild.result == null }
@@ -61,7 +64,7 @@ pipeline {
                 ])
             }
         }
-        
+
         stage('Run Tests') {
             when {
                 expression { currentBuild.result == null }
@@ -83,7 +86,7 @@ pipeline {
             }
         }
     }
-    
+
     post {
         always {
             junit testResults: '**/target/surefire-reports/*.xml', allowEmptyResults: true
