@@ -29,17 +29,21 @@ pipeline {
                     def sshCmd = "ssh -i ${sshKey} -o UserKnownHostsFile=${knownHosts} -o IdentitiesOnly=yes -T git@github.com"
                     echo "即将执行的 SSH 命令: ${sshCmd}"
                     try {
-                        def sshOutput = bat(
+                        def batResult = bat(
                             script: sshCmd,
                             returnStdout: true
-                        ).trim()
+                        )
+                        def sshOutput = batResult.stdout.trim()
                         echo "SSH 命令输出: ${sshOutput}"
-                        if (!sshOutput.contains('successfully authenticated')) {
+                        if (batResult.exitValue != 0) {
+                            currentBuild.result = 'FAILURE'
+                            error "SSH 命令执行失败，退出码: ${batResult.exitValue}，输出: ${sshOutput}"
+                        } else if (!sshOutput.contains('successfully authenticated')) {
                             currentBuild.result = 'FAILURE'
                             error "SSH验证失败，输出: ${sshOutput}"
                         } else {
-                            echo "SSH 验证成功"
                             currentBuild.result = null
+                            echo "SSH 验证成功"
                         }
                     } catch (Exception e) {
                         currentBuild.result = 'FAILURE'
