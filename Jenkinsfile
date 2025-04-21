@@ -35,7 +35,7 @@ pipeline {
                             error "SSH验证失败，输出: ${sshOutput}"
                         } else {
                             echo "SSH 验证成功"
-                            currentBuild.result = null
+                            currentBuild.result = null // 明确设置为 null，确保后续阶段正常执行
                         }
                     } catch (Exception e) {
                         currentBuild.result = 'FAILURE'
