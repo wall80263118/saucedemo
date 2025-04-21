@@ -69,7 +69,7 @@ public class ParameterizedPurchaseTest {
         System.setProperty("screenshot.path", screenshotPath);
 
         checkoutPage.completePurchase();
-        Assert.assertEquals(checkoutPage.getConfirmationMessage(), "Thank you for your order!");
+        Assert.assertEquals(checkoutPage.getConfirmationMessage(), "Thank you for your orde");
     }
 
     @AfterClass
