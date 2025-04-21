@@ -7,11 +7,11 @@ pipeline {
     }
 
     parameters {
-        choice(name: 'PRODUCT_COUNT', choices: ['1', '2', '3','4','5','6','7','8','9'], description: '购买商品数量')
-        string(name: 'FIRST_NAME', defaultValue: 'John', description: '收件人名字')
-        string(name: 'LAST_NAME', defaultValue: 'Doe', description: '收件人姓名')
-        string(name: 'POSTAL_CODE', defaultValue: '12345', description: '邮政编码')
-        choice(name: 'BROWSER', choices: ['chrome', 'firefox'], description: '测试浏览器')
+        choice(name: 'PRODUCT_COUNT', choices: ['1', '2', '3','4','5','6','7','8','9'], description: 'Number')
+        string(name: 'FIRST_NAME', defaultValue: 'John', description: 'First Name')
+        string(name: 'LAST_NAME', defaultValue: 'Doe', description: 'Last Name')
+        string(name: 'POSTAL_CODE', defaultValue: '12345', description: 'Postcode')
+        choice(name: 'BROWSER', choices: ['chrome', 'firefox'], description: 'Chrome')
     }
 
     tools {
@@ -24,10 +24,9 @@ pipeline {
             steps {
                 script {
                     try {
-                        // Windows 环境
                         bat 'ssh -v -i C:\\Windows\\System32\\config\\systemprofile\\.ssh\\github_key -o UserKnownHostsFile=C:\\Windows\\System32\\config\\systemprofile\\.ssh\\known_hosts -o IdentitiesOnly=yes -T git@github.com || exit 0'
                     } catch (err) {
-                        echo "SSH 验证成功，但 GitHub 返回了退出码 1（正常行为）"
+                        echo "SSH 验证成功，但 GitHub 返回了退出码 1（正常）"
                     }
                 }
             }
