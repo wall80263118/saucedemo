@@ -26,7 +26,7 @@ pipeline {
                     echo "开始执行 SSH 验证..."
                     def sshKey = "C:\\Windows\\System32\\config\\systemprofile\\.ssh\\github_key"
                     def knownHosts = "C:\\Windows\\System32\\config\\systemprofile\\.ssh\\known_hosts"
-                    def sshCmd = "ssh -i ${sshKey} -o UserKnownHostsFile=${knownHosts} -o IdentitiesOnly=yes -T git@github.com"
+                    def sshCmd = "ssh -v -i ${sshKey} -o UserKnownHostsFile=${knownHosts} -o IdentitiesOnly=yes -T git@github.com"
                     echo "即将执行的 SSH 命令: ${sshCmd}"
                     try {
                         def batResult = bat(
