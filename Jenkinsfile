@@ -23,14 +23,23 @@ pipeline {
         stage('Verify SSH') {
             steps {
                 script {
-                    def sshOutput = bat(
-                        script: '%GIT_SSH_COMMAND% -T git@github.com 2>&1',
-                        returnStdout: true
-                    ).trim()
-                    
-                    if (!sshOutput.contains('successfully authenticated')) {
+                    echo "开始执行 SSH 验证..."
+                    try {
+                        def sshOutput = bat(
+                            script: '%GIT_SSH_COMMAND% -T git@github.com 2>&1',
+                            returnStdout: true
+                        ).trim()
+                        echo "SSH 命令输出: ${sshOutput}"
+                        if (!sshOutput.contains('successfully authenticated')) {
+                            currentBuild.result = 'FAILURE'
+                            error "SSH验证失败，输出: ${sshOutput}"
+                        } else {
+                            echo "SSH 验证成功"
+                            currentBuild.result = null
+                        }
+                    } catch (Exception e) {
                         currentBuild.result = 'FAILURE'
-                        error "SSH验证失败"
+                        error "SSH命令执行失败: ${e.getMessage()}"
                     }
                 }
             }
