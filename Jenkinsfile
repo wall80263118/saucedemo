@@ -24,12 +24,13 @@ pipeline {
             steps {
                 script {
                     echo "开始执行 SSH 验证..."
-                    echo "GIT_SSH_COMMAND: ${env.GIT_SSH_COMMAND}"
-                    echo "SSH_KEY: ${env.SSH_KEY}"
-                    echo "KNOWN_HOSTS: ${env.KNOWN_HOSTS}"
+                    def sshKey = "C:\\Windows\\System32\\config\\systemprofile\\.ssh\\github_key"
+                    def knownHosts = "C:\\Windows\\System32\\config\\systemprofile\\.ssh\\known_hosts"
+                    def sshCmd = "ssh -i ${sshKey} -o UserKnownHostsFile=${knownHosts} -o IdentitiesOnly=yes -T git@github.com"
+                    echo "即将执行的 SSH 命令: ${sshCmd}"
                     try {
                         def sshOutput = bat(
-                            script: '%GIT_SSH_COMMAND% -T git@github.com 2>&1',
+                            script: sshCmd,
                             returnStdout: true
                         ).trim()
                         echo "SSH 命令输出: ${sshOutput}"
