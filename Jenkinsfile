@@ -4,7 +4,7 @@ pipeline {
         SSH_KEY = 'C:\\Windows\\System32\\config\\systemprofile\\.ssh\\github_key'
         KNOWN_HOSTS = 'C:\\Windows\\System32\\config\\systemprofile\\.ssh\\known_hosts'
         GIT_SSH_COMMAND = "ssh -i ${SSH_KEY} -o UserKnownHostsFile=${KNOWN_HOSTS} -o IdentitiesOnly=yes"
-        // 新增环境变量
+
         ALLURE_RESULTS = "target/allure-results"
         SCREENSHOT_DIR = "screenshots"
     }
@@ -48,7 +48,6 @@ pipeline {
                     ]]
                 ])
                 
-                // 创建目录
                 bat """
                     mkdir "${SCREENSHOT_DIR}" || echo "Screenshot directory exists"
                     mkdir "${ALLURE_RESULTS}" || echo "Allure results directory exists"
@@ -59,55 +58,72 @@ pipeline {
         stage('Run Tests') {
             when { expression { currentBuild.result == null } }
             steps {
-                bat """
-                    mvn clean test ^
-                    -Dbrowser=${params.BROWSER} ^
-                    -DproductCount=${params.PRODUCT_COUNT} ^
-                    -DfirstName=${params.FIRST_NAME} ^
-                    -DlastName=${params.LAST_NAME} ^
-                    -DpostalCode=${params.POSTAL_CODE} ^
-                    -Dallure.results.directory=${ALLURE_RESULTS}
-                """
+                script {
+                    try {
+                        bat """
+                            mvn clean test ^
+                            -Dbrowser=${params.BROWSER} ^
+                            -DproductCount=${params.PRODUCT_COUNT} ^
+                            -DfirstName=${params.FIRST_NAME} ^
+                            -DlastName=${params.LAST_NAME} ^
+                            -DpostalCode=${params.POSTAL_CODE} ^
+                            -Dallure.results.directory=${ALLURE_RESULTS}
+                        """
+                    } catch (err) {
+                        echo "测试执行失败: ${err}"
+                        currentBuild.result = 'UNSTABLE'
+                    }
+                }
             }
             post {
                 always {
-                    // 保留JUnit报告作为兼容
+                    // JUnit报告
                     junit '**/target/surefire-reports/*.xml'
-                    
-                    // 归档截图和Allure结果
+                    // 归档截图和中间结果
                     archiveArtifacts artifacts: '**/screenshots/*.png,**/target/allure-results/**/*'
                 }
             }
         }
 
         stage('Generate Allure Report') {
+            when { 
+                expression { 
+                    // 只有在有测试结果时才生成报告
+                    fileExists("${ALLURE_RESULTS}") 
+                } 
+            }
             steps {
-                // 生成Allure报告
-                bat 'mvn allure:report'
-                
-                // 发布Allure报告
-                allure includeProperties: false, 
-                      jdk: '', 
-                      results: [[path: "${ALLURE_RESULTS}"]]
+                script {
+                    try {
+                        // 生成HTML报告（可选）
+                        bat 'mvn allure:report'
+                        
+                        // 发布Allure报告到Jenkins
+                        allure includeProperties: false, 
+                              jdk: '', 
+                              results: [[path: "${ALLURE_RESULTS}"]]
+                    } catch (err) {
+                        echo "生成Allure报告失败: ${err}"
+                        currentBuild.result = 'UNSTABLE'
+                    }
+                }
             }
         }
     }
 
     post {
         always {
-            // 归档所有测试相关文件
-            archiveArtifacts artifacts: '**/target/surefire-reports/*.xml,**/screenshots/*.png,**/target/allure-results/**/*', 
+            // 最终归档所有测试文件
+            archiveArtifacts artifacts: '**/target/surefire-reports/*.xml,**/screenshots/*.png,**/target/allure-results/**/*,**/target/site/allure-maven-plugin/**/*', 
                           allowEmptyArchive: true
             
-            // 清理工作空间
             cleanWs()
             
-            // 添加构建结果通知
             script {
                 if (currentBuild.currentResult == 'SUCCESS') {
-                    echo "Build succeeded! Allure report: ${BUILD_URL}allure/"
+                    echo "构建成功! Allure报告: ${BUILD_URL}allure/"
                 } else {
-                    echo "Build failed! Check test reports at ${BUILD_URL}allure/"
+                    echo "构建未完全成功! 请检查测试报告: ${BUILD_URL}allure/"
                 }
             }
         }
