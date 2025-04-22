@@ -1,13 +1,15 @@
 package tests;
 
+import io.qameta.allure.Attachment;
 import org.testng.Assert;
 import org.testng.annotations.*;
-
 import pages.*;
 import utils.TestUtils;
 import utils.ScreenshotUtils;
 import org.openqa.selenium.WebDriver;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 public class ParameterizedPurchaseTest {
     private WebDriver driver;
@@ -41,14 +43,17 @@ public class ParameterizedPurchaseTest {
     }
 
     @Test(priority = 1)
-    public void testLogin() {
+    public void testLogin() throws IOException {
         loginPage.login("standard_user", "secret_sauce");
         productsPage = new ProductsPage(driver);
         Assert.assertTrue(driver.getCurrentUrl().contains("inventory.html"));
+
+        // 登录成功后截图
+        attachScreenshotToReport("login_success");
     }
 
     @Test(priority = 2)
-    public void testAddProductsToCart() {
+    public void testAddProductsToCart() throws IOException {
         // 添加指定数量的商品到购物车
         for (int i = 0; i < productCount && i < productsPage.getProductCount(); i++) {
             productsPage.addProductToCart(i);
@@ -56,6 +61,9 @@ public class ParameterizedPurchaseTest {
         productsPage.goToCart();
         cartPage = new CartPage(driver);
         Assert.assertTrue(driver.getCurrentUrl().contains("cart.html"));
+
+        // 购物车页面截图
+        attachScreenshotToReport("cart_page");
     }
 
     @Test(priority = 3)
@@ -64,12 +72,21 @@ public class ParameterizedPurchaseTest {
         checkoutPage = new CheckoutPage(driver);
         checkoutPage.fillCheckoutInfo(firstName, lastName, postalCode);
 
-        // 在Overview页面截图
-        String screenshotPath = ScreenshotUtils.takeScreenshot(driver, "checkout_overview");
-        System.setProperty("screenshot.path", screenshotPath);
+        // 填写信息后截图
+        attachScreenshotToReport("checkout_info_filled");
 
         checkoutPage.completePurchase();
-        Assert.assertEquals(checkoutPage.getConfirmationMessage(), "Thank you for your orde");
+        Assert.assertEquals(checkoutPage.getConfirmationMessage(), "Thank you for your order!");
+
+        // 订单确认页面截图
+        attachScreenshotToReport("order_confirmation");
+    }
+
+    // Allure附件方法，将截图附加到测试报告
+    @Attachment(value = "Screenshot: {0}", type = "image/png")
+    private byte[] attachScreenshotToReport(String screenshotName) throws IOException {
+        String screenshotPath = ScreenshotUtils.takeScreenshot(driver, screenshotName);
+        return Files.readAllBytes(Paths.get(screenshotPath));
     }
 
     @AfterClass
