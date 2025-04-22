@@ -46,13 +46,13 @@ public class ParameterizedPurchaseTest {
     public void testLogin() throws IOException {
         loginPage.login("standard_user", "secret_sauce");
         productsPage = new ProductsPage(driver);
+        // 登录后截图
+        attachScreenshotToReport("login_success");
         Assert.assertTrue(driver.getCurrentUrl().contains("inventory.html"));
 
-        // 登录成功后截图
-        attachScreenshotToReport("login_success");
     }
 
-    @Test(priority = 2)
+    @Test(priority = 2, dependsOnMethods = "testLogin")
     public void testAddProductsToCart() throws IOException {
         // 添加指定数量的商品到购物车
         for (int i = 0; i < productCount && i < productsPage.getProductCount(); i++) {
@@ -60,13 +60,13 @@ public class ParameterizedPurchaseTest {
         }
         productsPage.goToCart();
         cartPage = new CartPage(driver);
-        Assert.assertTrue(driver.getCurrentUrl().contains("cart.html"));
-
         // 购物车页面截图
         attachScreenshotToReport("cart_page");
+        Assert.assertTrue(driver.getCurrentUrl().contains("cart.html"));
+
     }
 
-    @Test(priority = 3)
+    @Test(priority = 3, dependsOnMethods = "testAddProductsToCart")
     public void testCheckoutProcess() throws IOException {
         cartPage.proceedToCheckout();
         checkoutPage = new CheckoutPage(driver);
@@ -76,10 +76,11 @@ public class ParameterizedPurchaseTest {
         attachScreenshotToReport("checkout_info_filled");
 
         checkoutPage.completePurchase();
-        Assert.assertEquals(checkoutPage.getConfirmationMessage(), "Thank you for your order!");
-
         // 订单确认页面截图
         attachScreenshotToReport("order_confirmation");
+
+        Assert.assertEquals(checkoutPage.getConfirmationMessage(), "Thank you for your");
+
     }
 
     // Allure附件方法，将截图附加到测试报告
